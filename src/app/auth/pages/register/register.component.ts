@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import Swal from 'sweetalert2';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-register',
@@ -15,14 +17,23 @@ export class RegisterComponent implements OnInit {
   });
 
 
-  constructor(private fb: FormBuilder, private router: Router) { }
+  constructor(private fb: FormBuilder, private router: Router, private authService: AuthService) { }
 
   ngOnInit(): void {
   }
 
   register(){
     console.log(this.miFormulario.value);
-    this.router.navigateByUrl('/dashboard');
+
+    const { email, name, password } = this.miFormulario.value;
+
+    this.authService.registro( name, email, password ).subscribe(completed=>{
+      if (completed === true) {
+        this.router.navigateByUrl('/dashboard');        
+      } else {
+        Swal.fire('Error', 'No fue posible registrar al usuario', 'error');
+      }
+    })
   }
 
 }
